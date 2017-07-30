@@ -1,0 +1,24 @@
+{
+  "name": "vanilla-scrollify",
+  "version": "1.0.0",
+  "description": "A vanilla JS port of \u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[Dbasic vanilla JS port of JQuery Scrollify",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ianbusko/vanilla-scrollify.git"
+  },
+  "keywords": [
+    "scroll",
+    "smooth",
+    "snap"
+  ],
+  "author": "Ian Busko",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ianbusko/vanilla-scrollify/issues"
+  },
+  "homepage": "https://github.com/ianbusko/vanilla-scrollify#readme"
+}
