@@ -410,7 +410,6 @@ function Scrollify(options){
 							val.style.height = window.innerHeight;
 							overflow[i] = false;
 						} else {
-							debugger;
 							val.style.height = val.offsetHeight;
 
 							if(settings.overflowScroll) {
@@ -420,7 +419,6 @@ function Scrollify(options){
 							}
 						}
 					} else {
-						debugger;
 						// TODO: make sure this works
 						if((val.offsetHeight < window.innerHeight) || (settings.overflowScroll===false)) {
 							overflow[i] = false;
