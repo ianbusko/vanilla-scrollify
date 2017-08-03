@@ -1,4 +1,4 @@
-Scrollify(options){
+function Scrollify(options){
 	'use strict';
 	var heights = [],
 		names = [],
@@ -365,7 +365,6 @@ Scrollify(options){
 		}
 		if(heights.length) {
 			manualScroll.init();
-			swipeScroll.init();
 
 			window.addEventListener('resize', util.handleResize);
 			if (document.addEventListener) {
@@ -411,6 +410,7 @@ Scrollify(options){
 							val.style.height = window.innerHeight;
 							overflow[i] = false;
 						} else {
+							debugger;
 							val.style.height = val.offsetHeight;
 
 							if(settings.overflowScroll) {
@@ -420,6 +420,7 @@ Scrollify(options){
 							}
 						}
 					} else {
+						debugger;
 						// TODO: make sure this works
 						if((val.offsetHeight < window.innerHeight) || (settings.overflowScroll===false)) {
 							overflow[i] = false;

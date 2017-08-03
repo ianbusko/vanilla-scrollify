@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+   <meta charset="utf-8">
+   <title>title</title>
+   <style>
+
+    body{
+      margin:0;
+    }
+
+    .section{
+      background-color:gray;
+      height:100vh;
+      width:100%;
+    }
+
+    .section.double{
+      background-color:blue;
+      /*height:200vh;*/
+    }
+
+    .section:not(:last-of-type){
+      margin-bottom:2rem;
+    }
+
+   </style>
+ </head>
+ <body>
+   <!-- page content -->
+   <div class="section"></div>
+   <div class="section"></div>
+   <div class="section double"></div>
+   <div class="section"></div>
+   <div class="section"></div>
+   <div class="section"></div>
+   <div class="section"></div>
+   <div class="section"></div>
+   <div class="section"></div>
+   <div class="section"></div>
+
+   <script src="../dist/scroll-module.js"></script>
+   <script src="../src/scrollify.js"></script>
+   <script>
+
+      window.scrollTo(0,0);
+      var scroller = new Scrollify();
+      //
+      // var mod = new ScrollModule({
+      //   section:
+      // });
+      // mod.scrollTo('.section:nth-of-type(6)');
+
+   </script>
+ </body>
+</html>
