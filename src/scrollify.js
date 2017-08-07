@@ -6,7 +6,6 @@ function Scrollify(options){
 		overflow = [],
 		index = 0,
 		currentIndex = 0,
-		interstitialIndex = 1,
 		hasLocation = false,
 		timeoutId,
 		timeoutId2,
@@ -66,14 +65,12 @@ function Scrollify(options){
 			if(callbacks) {
 				settings.before(index,elements);
 			}
-			interstitialIndex = 1;
 			destination = heights[index];
 
 			// TODO: break this out into its own function
 			if(firstLoad===false && currentIndex>index && toTop===false) {
 				//We're going backwards
 				if(overflow[index]) {
-					interstitialIndex = parseInt(elements[index].offsetHeight / window.innerHeight);
 					destination = parseInt(heights[index]) + (elements[index].offsetHeight - window.innerHeight);
 				}
 			}
@@ -226,6 +223,7 @@ function Scrollify(options){
 					}
 				}
 				if(!overflow[index]) {
+					debugger;
 					e.preventDefault();
 				}
 				var currentScrollTime = new Date().getTime();
@@ -371,23 +369,7 @@ function Scrollify(options){
 				window.addEventListener('orientationchange', util.handleOrientation, false);
 			}
 		}
-		function interstitialScroll(pos) {
-
-      // TODO: add scrolling here
-			// if( $().velocity ) {
-			// 	$(settings.target).stop().velocity('scroll', {
-			// 		duration: settings.scrollSpeed,
-			// 		easing: settings.easing,
-			// 		offset: pos,
-			// 		mobileHA: false
-			// 	});
-			// } else {
-			// 	$(settings.target).stop().animate({
-			// 		scrollTop: pos
-			// 	}, settings.scrollSpeed,settings.easing);
-			// }
-		}
-
+		
 		function sizePanels(keepPosition) {
 			if(keepPosition) {
 				top = getScrollTop();
@@ -408,24 +390,11 @@ function Scrollify(options){
 						val.style.height = '';
 						if((val.offsetHeight <= window.innerHeight) || val.style.overflow === 'hidden' ){
 							val.style.height = window.innerHeight;
-							overflow[i] = false;
-						} else {
-							val.style.height = val.offsetHeight;
-
-							if(settings.overflowScroll) {
-								overflow[i] = true;
-							} else {
-								overflow[i] = false;
-							}
-						}
-					} else {
-						// TODO: make sure this works
-						if((val.offsetHeight < window.innerHeight) || (settings.overflowScroll===false)) {
-							overflow[i] = false;
-						} else {
-							overflow[i] = true;
 						}
 					}
+
+					overflow[i] = false;
+
 				});
 
 			if(keepPosition) {
@@ -477,6 +446,8 @@ function Scrollify(options){
 			if(!overflow[index]) {
 				return true;
 			}
+
+			debugger;
 			top = getScrollTop();
 			if(top>parseInt(heights[index])) {
 				return false;
