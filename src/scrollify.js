@@ -29,7 +29,7 @@ function Scrollify(options){
 			// easing: "easeOutExpo",
 			scrollSpeed: 1100,
 			offset : 0,
-			scrollbars: true,
+			scrollbars: false,
 			target:'html,body',
 			standardScrollElements: false,
 			setHeights: true,
@@ -369,7 +369,7 @@ function Scrollify(options){
 				window.addEventListener('orientationchange', util.handleOrientation, false);
 			}
 		}
-		
+
 		function sizePanels(keepPosition) {
 			if(keepPosition) {
 				top = getScrollTop();
