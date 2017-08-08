@@ -222,7 +222,6 @@ function Scrollify(options){
 					}
 				}
 				if(!overflow[index]) {
-					debugger;
 					e.preventDefault();
 				}
 				var currentScrollTime = new Date().getTime();
