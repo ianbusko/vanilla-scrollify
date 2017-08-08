@@ -442,7 +442,6 @@ function Scrollify(options){
 				return true;
 			}
 
-			debugger;
 			top = getScrollTop();
 			if(top>parseInt(heights[index])) {
 				return false;
