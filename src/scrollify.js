@@ -33,7 +33,6 @@ function Scrollify(options){
 			target:'html,body',
 			standardScrollElements: false,
 			setHeights: true,
-			overflowScroll:true,
 			updateHash: true,
 			before:function() {},
 			after:function() {},
@@ -377,10 +376,6 @@ function Scrollify(options){
 
 			var selector = settings.section;
 			overflow = [];
-
-			if(settings.scrollbars===false) {
-				settings.overflowScroll = false;
-			}
 
 			// TODO: break this out into extra methods
 			document.querySelectorAll(selector)
