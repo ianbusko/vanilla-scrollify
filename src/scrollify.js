@@ -3,7 +3,6 @@ function Scrollify(options){
 	var heights = [],
 		names = [],
 		elements = [],
-		overflow = [],
 		index = 0,
 		currentIndex = 0,
 		hasLocation = false,
@@ -65,14 +64,6 @@ function Scrollify(options){
 				settings.before(index,elements);
 			}
 			destination = heights[index];
-
-			// TODO: break this out into its own function
-			if(firstLoad===false && currentIndex>index && toTop===false) {
-				//We're going backwards
-				if(overflow[index]) {
-					destination = parseInt(heights[index]) + (elements[index].offsetHeight - window.innerHeight);
-				}
-			}
 
 			// TODO: move this into its own function
 			if(settings.updateHash && settings.sectionName && !(firstLoad===true && index===0)) {
@@ -213,6 +204,8 @@ function Scrollify(options){
 				}
 			},
 			wheelHandler:function(e) {
+				e.preventDefault();
+
 				if(disabled===true) {
 					return true;
 				} else if(settings.standardScrollElements) {
@@ -221,9 +214,7 @@ function Scrollify(options){
 						return true;
 					}
 				}
-				if(!overflow[index]) {
-					e.preventDefault();
-				}
+
 				var currentScrollTime = new Date().getTime();
 
 				e = e || window.event;
@@ -374,7 +365,6 @@ function Scrollify(options){
 			}
 
 			var selector = settings.section;
-			overflow = [];
 
 			// TODO: break this out into extra methods
 			document.querySelectorAll(selector)
@@ -386,9 +376,6 @@ function Scrollify(options){
 							val.style.height = window.innerHeight;
 						}
 					}
-
-					overflow[i] = false;
-
 				});
 
 			if(keepPosition) {
@@ -437,28 +424,10 @@ function Scrollify(options){
 		}
 
 		function atTop() {
-			if(!overflow[index]) {
-				return true;
-			}
-
-			top = getScrollTop();
-			if(top>parseInt(heights[index])) {
-				return false;
-			} else {
-				return true;
-			}
+			return true;
 		}
 		function atBottom() {
-			if(!overflow[index]) {
-				return true;
-			}
-
-			// why magic number 28?
-			if(getScrollTop() < parseInt(heights[index]) + (elements[index].offsetHeight - window.innerHeight) - 28) {
-				return false;
-			} else {
-				return true;
-			}
+			return true;
 		}
 	}
 
@@ -544,7 +513,6 @@ function Scrollify(options){
 		heights = [];
 		names = [];
 		elements = [];
-		overflow = [];
 	};
 	scrollify.update = function() {
 		if(!initialised) {
