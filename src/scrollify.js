@@ -50,63 +50,17 @@ function Scrollify(options){
 		return (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
 	}
 
-	function animateScroll(index,instant,callbacks,toTop) {
-		if(currentIndex===index) {
-			callbacks = false;
-		}
-		if(disabled===true) {
-			return true;
-		}
-
-		if(names[index]) {
-			scrollable = false;
-			if(callbacks) {
-				settings.before(index,elements);
-			}
-			destination = heights[index];
-
-			// TODO: move this into its own function
-			if(settings.updateHash && settings.sectionName && !(firstLoad===true && index===0)) {
-				if(history.pushState) {
-			    try {
-						history.replaceState(null, null, names[index]);
-			    } catch (e) {
-			    	if(window.console) {
-			    		console.warn('Scrollify warning: Page must be hosted to manipulate the hash value.');
-			    	}
-			    }
-				} else {
-					window.location.hash = names[index];
+	function updateHistory(panelName){
+		if(history.pushState) {
+			try {
+				history.replaceState(null, null, panelName);
+			} catch (e) {
+				if(window.console) {
+					console.warn('Scrollify warning: Page must be hosted to manipulate the hash value.');
 				}
 			}
-			if(firstLoad) {
-					settings.afterRender();
-					firstLoad = false;
-			}
-
-			currentIndex = index;
-
-			if(instant) {
-        scrollModule.scrollTo(destination, instant);
-				if(callbacks) {
-					settings.after(index,elements);
-				}
-			} else {
-				locked = true;
-
-        // TODO: make this a promise
-        scrollModule.settings.callback = function(){
-          locked = false;
-          firstLoad = false;
-          if(callbacks) {
-            settings.after(index,elements);
-          }
-        }
-
-        scrollModule.scrollTo(elements[index]);
-				warnHashValue();
-			}
-
+		} else {
+			window.location.hash = panelName;
 		}
 	}
 
@@ -117,6 +71,57 @@ function Scrollify(options){
 					console.warn('Scrollify warning: ID matches hash value - this will cause the page to anchor.');
 				}
 			} catch (e) {}
+		}
+	}
+
+	function animateScroll(index,instant,callbacks,toTop) {
+		if(currentIndex===index) {
+			callbacks = false;
+		}
+		if(disabled===true) {
+			return true;
+		}
+
+		if(!names[index]){
+			return;
+		}
+
+		scrollable = false;
+		if(callbacks) {
+			settings.before(index,elements);
+		}
+		destination = heights[index];
+
+		// TODO: move this into its own function
+		if(settings.updateHash && settings.sectionName && !(firstLoad===true && index===0)) {
+			updateHistory(names[index]);
+		}
+		if(firstLoad) {
+			settings.afterRender();
+			firstLoad = false;
+		}
+
+		currentIndex = index;
+
+		if(instant) {
+      scrollModule.scrollTo(destination, instant);
+			if(callbacks) {
+				settings.after(index,elements);
+			}
+		} else {
+			locked = true;
+
+      // TODO: make this a promise
+      scrollModule.settings.callback = function(){
+        locked = false;
+        firstLoad = false;
+        if(callbacks) {
+          settings.after(index,elements);
+        }
+      }
+
+      scrollModule.scrollTo(elements[index]);
+			warnHashValue();
 		}
 	}
 
