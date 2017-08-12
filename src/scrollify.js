@@ -112,7 +112,7 @@ function Scrollify(options){
 		} else {
 			locked = true;
 			warnHashValue();
-			
+
       scrollModule.scrollTo(elements[index]).then(() => {
 				locked = false;
 				firstLoad = false;
