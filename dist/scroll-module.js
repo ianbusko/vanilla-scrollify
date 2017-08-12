@@ -12,7 +12,6 @@ var ScrollModule = function () {
 
     this.settings = Object.assign({
       easing: this._easeInOutQuad,
-      callback: function callback() {},
       offset: 0,
       duration: 400
     }, options);
@@ -27,7 +26,6 @@ var ScrollModule = function () {
 
       var instant = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-
       if ((typeof target === 'undefined' ? 'undefined' : _typeof(target)) === 'object') {
         this.distance = this.settings.offset + target.getBoundingClientRect().top;
       } else if (typeof target === 'string') {
@@ -39,30 +37,30 @@ var ScrollModule = function () {
       this.start = window.pageYOffset;
       this.duration = instant ? 0 : this.settings.duration;
 
-      requestAnimationFrame(function (time) {
-        _this.timeStart = time;
-        _this._loop(time);
+      return new Promise(function (resolve, reject) {
+        requestAnimationFrame(function (time) {
+          _this.timeStart = time;
+          _this._loop(time, resolve);
+        });
       });
     }
   }, {
     key: '_loop',
-    value: function _loop(time) {
+    value: function _loop(time, resolve) {
       var _this2 = this;
 
       this.timeElapsed = time - this.timeStart;
-
       window.scrollTo(0, this.settings.easing(this.timeElapsed, this.start, this.distance, this.duration));
 
       if (this.timeElapsed < this.duration) requestAnimationFrame(function (time) {
-        return _this2._loop(time);
-      });else this._end();
+        return _this2._loop(time, resolve);
+      });else this._end(resolve);
     }
   }, {
     key: '_end',
-    value: function _end() {
+    value: function _end(resolve) {
       window.scrollTo(0, this.start + this.distance);
-
-      if (typeof this.settings.callback === 'function') this.settings.callback();
+      resolve();
     }
   }, {
     key: '_easeInOutQuad',
