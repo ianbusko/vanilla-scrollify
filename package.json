@@ -22,6 +22,6 @@
   },
   "homepage": "https://github.com/ianbusko/vanilla-scrollify#readme",
   "devDependencies": {
-    "smooth-scroll-module": "^1.0.3"
+    "smooth-scroll-module": "^1.0.4"
   }
 }
