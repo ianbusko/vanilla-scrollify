@@ -104,24 +104,22 @@ function Scrollify(options){
 		currentIndex = index;
 
 		if(instant) {
-      scrollModule.scrollTo(destination, instant);
-			if(callbacks) {
-				settings.after(index,elements);
-			}
+      scrollModule.scrollTo(destination, instant).then(() => {
+				if(callbacks) {
+					settings.after(index,elements);
+				}
+			});
 		} else {
 			locked = true;
-
-      // TODO: make this a promise
-      scrollModule.settings.callback = function(){
-        locked = false;
-        firstLoad = false;
-        if(callbacks) {
-          settings.after(index,elements);
-        }
-      }
-
-      scrollModule.scrollTo(elements[index]);
 			warnHashValue();
+			
+      scrollModule.scrollTo(elements[index]).then(() => {
+				locked = false;
+				firstLoad = false;
+				if(callbacks) {
+					settings.after(index,elements);
+				}
+			});
 		}
 	}
 
