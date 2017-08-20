@@ -307,6 +307,12 @@ function Scrollify(options){
 
 				window.addEventListener(wheelEvent, manualScroll.wheelHandler);
 				window.addEventListener('keydown', manualScroll.keyHandler);
+
+				if(!settings.enableMobile && window.innerWidth < settings.mobileWidth){
+					scrollify.disable();
+				} else if(settings.enableMobile && window.innerWidth > settings.mobileWidth && disabled){
+					scrollify.enable();
+				}
 			}
 		};
 
@@ -534,7 +540,7 @@ function Scrollify(options){
 	};
 	scrollify.disable = function() {
 		disabled = true;
-		document.querySelector('body').style.overflow = 'hidden';
+		document.querySelector('body').style.overflow = '';
 	};
 	scrollify.enable = function() {
 		disabled = false;
