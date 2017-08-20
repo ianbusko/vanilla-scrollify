@@ -1,4 +1,4 @@
-function Scrollify(options){
+function Scrollify(scrollModule, options){
 	'use strict';
 	var heights = [],
 		names = [],
@@ -25,8 +25,6 @@ function Scrollify(options){
 		settings = {
 			section: '.section',
 			sectionName: 'section-name',
-			// easing: "easeOutExpo",
-			scrollSpeed: 1100,
 			offset : 0,
 			scrollbars: false,
 			target:'html,body',
@@ -41,12 +39,6 @@ function Scrollify(options){
 
 		settings.enableMobile = false;
 		settings.mobileWidth = 1200;
-
-    // TODO: pass easing as a parameter correctly
-	  var scrollModule = new ScrollModule({
-	    duration: settings.scrollSpeed,
-			offset: settings.offset
-	  });
 
 	// replace $window.scrollTop()
 	function getScrollTop(){
