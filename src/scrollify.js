@@ -310,7 +310,7 @@ function Scrollify(options){
 
 				if(!settings.enableMobile && window.innerWidth < settings.mobileWidth){
 					scrollify.disable();
-				} else if(settings.enableMobile && window.innerWidth > settings.mobileWidth && disabled){
+				} else if(disabled){
 					scrollify.enable();
 				}
 			}
@@ -337,7 +337,7 @@ function Scrollify(options){
 			handleResize:function() {
 				if(!settings.enableMobile && window.innerWidth < settings.mobileWidth){
 					scrollify.disable();
-				} else if(settings.enableMobile && window.innerWidth > settings.mobileWidth && disabled){
+				} else if(disabled){
 					scrollify.enable();
 				}
 				//callbacks, scroll
