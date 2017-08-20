@@ -207,8 +207,6 @@ function Scrollify(options){
 				}
 			},
 			wheelHandler:function(e) {
-				e.preventDefault();
-
 				if(disabled===true) {
 					return true;
 				} else if(settings.standardScrollElements) {
@@ -217,7 +215,7 @@ function Scrollify(options){
 						return true;
 					}
 				}
-
+				e.preventDefault();
 				var currentScrollTime = new Date().getTime();
 
 				e = e || window.event;
@@ -528,9 +526,13 @@ function Scrollify(options){
 	};
 	scrollify.disable = function() {
 		disabled = true;
+		document.querySelector('body').style.overflow = 'hidden';
 	};
 	scrollify.enable = function() {
 		disabled = false;
+		if(!settings.scrollbars) {
+			document.querySelector('body').style.overflow = 'hidden';
+		}
 		if (initialised) {
 			//instant,callbacks
 			manualScroll.calculateNearest(false,false);
