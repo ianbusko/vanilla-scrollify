@@ -39,6 +39,9 @@ function Scrollify(options){
 			afterRender:function() {}
 		};
 
+		settings.enableMobile = false;
+		settings.mobileWidth = 1200;
+
     // TODO: pass easing as a parameter correctly
 	  var scrollModule = new ScrollModule({
 	    duration: settings.scrollSpeed,
@@ -326,6 +329,11 @@ function Scrollify(options){
 				util.refresh(false,false);
 			},
 			handleResize:function() {
+				if(!settings.enableMobile && window.innerWidth < settings.mobileWidth){
+					scrollify.disable();
+				} else if(settings.enableMobile && window.innerWidth > settings.mobileWidth && disabled){
+					scrollify.enable();
+				}
 				//callbacks, scroll
 				util.refresh(true,false);
 			},
