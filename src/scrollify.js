@@ -346,6 +346,13 @@ function Scrollify(scrollModule, options){
 		}
 	};
 
+	class Scroller{
+		constructor(options){
+
+			this.settings = Object.assign(settings, options);
+		}
+	}
+
 	var scrollify = function(options) {
 		initialised = true;
 
