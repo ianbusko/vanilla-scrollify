@@ -19,7 +19,6 @@ function Scrollify(scrollModule, options){
 		scrollSamples = [],
 		scrollTime = new Date().getTime(),
 		firstLoad = true,
-		initialised = false,
 		destination = 0,
 		wheelEvent = 'onwheel' in document ? 'wheel' : document.onmousewheel !== undefined ? 'mousewheel' : 'DOMMouseScroll',
 		settings = {
@@ -141,426 +140,429 @@ function Scrollify(scrollModule, options){
 		}
 	}
 
-	var scrollify = function(options) {
-		initialised = true;
+	manualScroll = {
+		handleMousedown:function() {
+			if(disabled===true) {
+				return true;
+			}
+			scrollable = false;
+			scrolled = false;
+		},
+		handleMouseup:function() {
+			if(disabled===true) {
+				return true;
+			}
+			scrollable = true;
+			if(scrolled) {
+				//instant,callbacks
+				manualScroll.calculateNearest(false,true);
+			}
+		},
+		handleScroll:function() {
+			if(disabled===true) {
+				return true;
+			}
+			if(timeoutId){
+				clearTimeout(timeoutId);
+			}
 
-		manualScroll = {
-			handleMousedown:function() {
-				if(disabled===true) {
-					return true;
+			timeoutId = setTimeout(function(){
+				scrolled = true;
+				if(scrollable===false) {
+					return false;
 				}
 				scrollable = false;
-				scrolled = false;
-			},
-			handleMouseup:function() {
-				if(disabled===true) {
+				//instant,callbacks
+				manualScroll.calculateNearest(false,true);
+			}, 200);
+		},
+		calculateNearest:function(instant,callbacks) {
+			top = getScrollTop();
+			var i =1,
+				max = heights.length,
+				closest = 0,
+				prev = Math.abs(heights[0] - top),
+				diff;
+			for(;i<max;i++) {
+				diff = Math.abs(heights[i] - top);
+
+				if(diff < prev) {
+					prev = diff;
+					closest = i;
+				}
+			}
+			if((atBottom() && closest>index) || atTop()) {
+				index = closest;
+				//index, instant, callbacks, toTop
+				animateScroll(closest,instant,callbacks,false);
+			}
+		},
+		wheelHandler:function(e) {
+			if(disabled===true) {
+				return true;
+			} else if(settings.standardScrollElements) {
+
+				if(e.target.matches(settings.standardScrollElements) || e.target.closest(settings.standardScrollElements).length) {
 					return true;
 				}
-				scrollable = true;
-				if(scrolled) {
-					//instant,callbacks
-					manualScroll.calculateNearest(false,true);
-				}
-			},
-			handleScroll:function() {
-				if(disabled===true) {
-					return true;
-				}
-				if(timeoutId){
-					clearTimeout(timeoutId);
-				}
+			}
+			e.preventDefault();
+			var currentScrollTime = new Date().getTime();
 
-				timeoutId = setTimeout(function(){
-					scrolled = true;
-					if(scrollable===false) {
-						return false;
-					}
-					scrollable = false;
-					//instant,callbacks
-					manualScroll.calculateNearest(false,true);
-				}, 200);
-			},
-			calculateNearest:function(instant,callbacks) {
-				top = getScrollTop();
-				var i =1,
-					max = heights.length,
-					closest = 0,
-					prev = Math.abs(heights[0] - top),
-					diff;
-				for(;i<max;i++) {
-					diff = Math.abs(heights[i] - top);
+			e = e || window.event;
+			var value = e.wheelDelta || -e.deltaY || -e.detail;
+			var delta = Math.max(-1, Math.min(1, value));
 
-					if(diff < prev) {
-						prev = diff;
-						closest = i;
-					}
-				}
-				if((atBottom() && closest>index) || atTop()) {
-					index = closest;
-					//index, instant, callbacks, toTop
-					animateScroll(closest,instant,callbacks,false);
-				}
-			},
-			wheelHandler:function(e) {
-				if(disabled===true) {
-					return true;
-				} else if(settings.standardScrollElements) {
+			if(scrollSamples.length > 149){
+				scrollSamples.shift();
+			}
+			scrollSamples.push(Math.abs(value));
 
-					if(e.target.matches(settings.standardScrollElements) || e.target.closest(settings.standardScrollElements).length) {
-						return true;
-					}
-				}
-				e.preventDefault();
-				var currentScrollTime = new Date().getTime();
+			if((currentScrollTime-scrollTime) > 200){
+				scrollSamples = [];
+			}
+			scrollTime = currentScrollTime;
 
-				e = e || window.event;
-				var value = e.wheelDelta || -e.deltaY || -e.detail;
-				var delta = Math.max(-1, Math.min(1, value));
-
-				if(scrollSamples.length > 149){
-					scrollSamples.shift();
-				}
-				scrollSamples.push(Math.abs(value));
-
-				if((currentScrollTime-scrollTime) > 200){
-					scrollSamples = [];
-				}
-				scrollTime = currentScrollTime;
-
-				if(locked) {
-					return false;
-				}
-				if(delta<0) {
-					if(index<heights.length-1) {
-						if(atBottom()) {
-							if(isAccelerating(scrollSamples)) {
-								e.preventDefault();
-								index++;
-								locked = true;
-								//index, instant, callbacks, toTop
-								animateScroll(index,false,true, false);
-							} else {
-								return false;
-							}
-						}
-					}
-				} else if(delta>0) {
-					if(index>0) {
-						if(atTop()) {
-							if(isAccelerating(scrollSamples)) {
-								e.preventDefault();
-								index--;
-								locked = true;
-								//index, instant, callbacks, toTop
-								animateScroll(index,false,true, false);
-							} else {
-								return false
-							}
-						}
-					}
-				}
-
-			},
-			keyHandler:function(e) {
-				if(disabled===true) {
-					return true;
-				}
-				if(locked===true) {
-					return false;
-				}
-				if(e.keyCode==38 || e.keyCode==33) {
-					if(index>0) {
-						if(atTop()) {
-							e.preventDefault();
-							index--;
-							//index, instant, callbacks, toTop
-							animateScroll(index,false,true,false);
-						}
-					}
-				} else if(e.keyCode==40 || e.keyCode==34) {
-					if(index<heights.length-1) {
-						if(atBottom()) {
+			if(locked) {
+				return false;
+			}
+			if(delta<0) {
+				if(index<heights.length-1) {
+					if(atBottom()) {
+						if(isAccelerating(scrollSamples)) {
 							e.preventDefault();
 							index++;
+							locked = true;
 							//index, instant, callbacks, toTop
-							animateScroll(index,false,true,false);
+							animateScroll(index,false,true, false);
+						} else {
+							return false;
 						}
 					}
 				}
-			},
-			init:function() {
-				if(settings.scrollbars) {
-					window.addEventListener('mousedown', manualScroll.handleMousedown);
-					window.addEventListener('mouseup', manualScroll.handleMouseup);
-					window.addEventListener('scroll', manualScroll.handleScroll);
-				} else {
-					document.querySelector('body').style.overflow = 'hidden';
-				}
-
-				window.addEventListener(wheelEvent, manualScroll.wheelHandler);
-				window.addEventListener('keydown', manualScroll.keyHandler);
-
-				if(!settings.enableMobile && window.innerWidth < settings.mobileWidth){
-					scrollify.disable();
-				} else if(disabled){
-					scrollify.enable();
-				}
-			}
-		};
-
-		util = {
-			refresh:function(withCallback,scroll) {
-				clearTimeout(timeoutId2);
-				timeoutId2 = setTimeout(function() {
-					//retain position
-					sizePanels(true);
-					//scroll, firstLoad
-					calculatePositions(scroll,false);
-					if(withCallback) {
-						settings.afterResize();
-					}
-				},400);
-			},
-			handleUpdate:function() {
-				//callbacks, scroll
-				//changed from false,true to false,false
-				util.refresh(false,false);
-			},
-			handleResize:function() {
-				if(!settings.enableMobile && window.innerWidth < settings.mobileWidth){
-					scrollify.disable();
-				} else if(disabled){
-					scrollify.enable();
-				}
-				//callbacks, scroll
-				util.refresh(true,false);
-			},
-			handleOrientation:function() {
-				//callbacks, scroll
-				util.refresh(true,true);
-			}
-		};
-
-    // TODO: replace Object.assign with smarer property assignment
-		settings = Object.assign(settings, options);
-
-		//retain position
-		sizePanels(false);
-		calculatePositions(false,true);
-
-		if(true===hasLocation) {
-			//index, instant, callbacks, toTop
-			animateScroll(index,false,true,true);
-		} else {
-			setTimeout(function() {
-				//instant,callbacks
-				manualScroll.calculateNearest(true,false);
-			},200);
-		}
-		if(heights.length) {
-			manualScroll.init();
-
-			window.addEventListener('resize', util.handleResize);
-			if (document.addEventListener) {
-				window.addEventListener('orientationchange', util.handleOrientation, false);
-			}
-		}
-
-		function sizePanels(keepPosition) {
-			if(keepPosition) {
-				top = getScrollTop();
-			}
-
-			var selector = settings.section;
-
-			// TODO: break this out into extra methods
-			document.querySelectorAll(selector)
-				.forEach(function(val, i){
-					if(settings.setHeights){
-
-						val.style.height = '';
-						if((val.offsetHeight <= window.innerHeight) || val.style.overflow === 'hidden' ){
-							val.style.height = window.innerHeight;
+			} else if(delta>0) {
+				if(index>0) {
+					if(atTop()) {
+						if(isAccelerating(scrollSamples)) {
+							e.preventDefault();
+							index--;
+							locked = true;
+							//index, instant, callbacks, toTop
+							animateScroll(index,false,true, false);
+						} else {
+							return false
 						}
 					}
-				});
-
-			if(keepPosition) {
-				// TODO: make this work (should set scroll top to top);
-				getScrollTop(top);
-			}
-		}
-		function calculatePositions(scroll,firstLoad) {
-			var selector = settings.section;
-
-			heights = [];
-			names = [];
-			elements = [];
-
-			document.querySelectorAll(selector)
-				.forEach(function(val, i){
-					if(i>0) {
-						heights[i] = parseInt(val.getBoundingClientRect().top + document.body.scrollTop) + settings.offset;
-					} else {
-						heights[i] = parseInt(val.getBoundingClientRect().top + document.body.scrollTop);
-					}
-
-					if(settings.sectionName && val.getAttribute(settings.sectionName)) {
-						names[i] = '#' + val.getAttribute(settings.sectionName).toString().replace(/ /g,'-');
-					} else {
-							names[i] = '#' + (i + 1);
-					}
-					elements[i] = val;
-
-					try {
-						if(document.getElementById(names[i]) && window.console){
-							console.warn('Scrollify warning: Section names can\'t match IDs - this will cause the browser to anchor.');
-						}
-					} catch (e) {}
-
-					if(window.location.hash===names[i]) {
-						index = i;
-						hasLocation = true;
-					}
-				});
-
-			if(true===scroll) {
-				//index, instant, callbacks, toTop
-				animateScroll(index,false,false,false);
-			}
-		}
-
-		function atTop() {
-			return true;
-		}
-		function atBottom() {
-			return true;
-		}
-	}
-
-	function move(panel,instant) {
-		var z = names.length;
-		for(;z>=0;z--) {
-			if(typeof panel === 'string') {
-				if (names[z]===panel) {
-					index = z;
-					//index, instant, callbacks, toTop
-					animateScroll(z,instant,true,true);
 				}
+			}
+
+		},
+		keyHandler:function(e) {
+			if(disabled===true) {
+				return true;
+			}
+			if(locked===true) {
+				return false;
+			}
+			if(e.keyCode==38 || e.keyCode==33) {
+				if(index>0) {
+					if(atTop()) {
+						e.preventDefault();
+						index--;
+						//index, instant, callbacks, toTop
+						animateScroll(index,false,true,false);
+					}
+				}
+			} else if(e.keyCode==40 || e.keyCode==34) {
+				if(index<heights.length-1) {
+					if(atBottom()) {
+						e.preventDefault();
+						index++;
+						//index, instant, callbacks, toTop
+						animateScroll(index,false,true,false);
+					}
+				}
+			}
+		},
+		init:function() {
+			if(settings.scrollbars) {
+				window.addEventListener('mousedown', manualScroll.handleMousedown);
+				window.addEventListener('mouseup', manualScroll.handleMouseup);
+				window.addEventListener('scroll', manualScroll.handleScroll);
 			} else {
-				if(z===panel) {
-					index = z;
-					//index, instant, callbacks, toTop
-					animateScroll(z,instant,true,true);
-				}
+				document.querySelector('body').style.overflow = 'hidden';
+			}
+
+			window.addEventListener(wheelEvent, manualScroll.wheelHandler);
+			window.addEventListener('keydown', manualScroll.keyHandler);
+
+			if(!settings.enableMobile && window.innerWidth < settings.mobileWidth){
+				scrollify.disable();
+			} else if(disabled){
+				scrollify.enable();
 			}
 		}
+	};
+
+	// TODO: move these into manualScroll
+	function atTop() {
+		return true;
 	}
-	scrollify.move = function(panel) {
-		if(panel===undefined) {
-			return false;
-		}
-		move(panel,false);
-	};
-	scrollify.instantMove = function(panel) {
-		if(panel===undefined) {
-			return false;
-		}
-		move(panel,true);
-	};
-	scrollify.next = function() {
-		if(index<names.length) {
-			index += 1;
-			//index, instant, callbacks, toTop
-			animateScroll(index,false,true,true);
-		}
-	};
-	scrollify.previous = function() {
-		if(index>0) {
-			index -= 1;
-			//index, instant, callbacks, toTop
-			animateScroll(index,false,true,true);
-		}
-	};
-	scrollify.instantNext = function() {
-		if(index<names.length) {
-			index += 1;
-			//index, instant, callbacks, toTop
-			animateScroll(index,true,true,true);
-		}
-	};
-	scrollify.instantPrevious = function() {
-		if(index>0) {
-			index -= 1;
-			//index, instant, callbacks, toTop
-			animateScroll(index,true,true,true);
+	function atBottom() {
+		return true;
+	}
+
+	util = {
+		refresh:function(withCallback,scroll) {
+			clearTimeout(timeoutId2);
+			timeoutId2 = setTimeout(function() {
+				//retain position
+				sizePanels(true);
+				//scroll, firstLoad
+				calculatePositions(scroll,false);
+				if(withCallback) {
+					settings.afterResize();
+				}
+			},400);
+		},
+		handleUpdate:function() {
+			//callbacks, scroll
+			//changed from false,true to false,false
+			util.refresh(false,false);
+		},
+		handleResize:function() {
+			if(!settings.enableMobile && window.innerWidth < settings.mobileWidth){
+				scrollify.disable();
+			} else if(disabled){
+				scrollify.enable();
+			}
+			//callbacks, scroll
+			util.refresh(true,false);
+		},
+		handleOrientation:function() {
+			//callbacks, scroll
+			util.refresh(true,true);
 		}
 	};
-	scrollify.destroy = function() {
-		if(!initialised) {
-			return false;
+
+	function sizePanels(keepPosition) {
+		if(keepPosition) {
+			top = getScrollTop();
 		}
-		if(settings.setHeights) {
-			document.querySelectorAll(settings.section).forEach(function(val){
-				val.style.height = '';
+
+		var selector = settings.section;
+
+		// TODO: break this out into extra methods
+		document.querySelectorAll(selector)
+			.forEach(function(val, i){
+				if(settings.setHeights){
+
+					val.style.height = '';
+					if((val.offsetHeight <= window.innerHeight) || val.style.overflow === 'hidden' ){
+						val.style.height = window.innerHeight;
+					}
+				}
 			});
-		}
 
-		window.removeEventListener('resize', util.handleResize);
-		// TODO: remove settings.scrollbars
-		if(settings.scrollbars) {
-			window.removeEventListener('mousedown', manualScroll.handleMousedown);
-			window.removeEventListener('mouseup', manualScroll.handleMouseup);
-			window.removeEventListener('scroll', manualScroll.handleScroll);
+		if(keepPosition) {
+			// TODO: make this work (should set scroll top to top);
+			getScrollTop(top);
 		}
-
-		window.removeEventListener(wheelEvent, manualScroll.wheelHandler);
-		window.removeEventListener('keydown', manualScroll.keyHandler);
+	}
+	function calculatePositions(scroll,firstLoad) {
+		var selector = settings.section;
 
 		heights = [];
 		names = [];
 		elements = [];
-	};
-	scrollify.update = function() {
-		if(!initialised) {
-			return false;
+
+		document.querySelectorAll(selector)
+			.forEach(function(val, i){
+				if(i>0) {
+					heights[i] = parseInt(val.getBoundingClientRect().top + document.body.scrollTop) + settings.offset;
+				} else {
+					heights[i] = parseInt(val.getBoundingClientRect().top + document.body.scrollTop);
+				}
+
+				if(settings.sectionName && val.getAttribute(settings.sectionName)) {
+					names[i] = '#' + val.getAttribute(settings.sectionName).toString().replace(/ /g,'-');
+				} else {
+						names[i] = '#' + (i + 1);
+				}
+				elements[i] = val;
+
+				try {
+					if(document.getElementById(names[i]) && window.console){
+						console.warn('Scrollify warning: Section names can\'t match IDs - this will cause the browser to anchor.');
+					}
+				} catch (e) {}
+
+				if(window.location.hash===names[i]) {
+					index = i;
+					hasLocation = true;
+				}
+			});
+
+		if(true===scroll) {
+			//index, instant, callbacks, toTop
+			animateScroll(index,false,false,false);
 		}
-		util.handleUpdate();
-	};
-	scrollify.current = function() {
-		return elements[index];
-	};
-	scrollify.disable = function() {
-		disabled = true;
-		document.querySelector('body').style.overflow = '';
-	};
-	scrollify.enable = function() {
-		disabled = false;
-		if(!settings.scrollbars) {
-			document.querySelector('body').style.overflow = 'hidden';
+	}
+
+	class Scroller{
+		constructor(options){
+			this.settings = Object.assign(settings, options);
+
+			//retain position
+			sizePanels(false);
+			calculatePositions(false,true);
+
+			if(true===hasLocation) {
+				//index, instant, callbacks, toTop
+				animateScroll(index,false,true,true);
+			} else {
+				setTimeout(function() {
+					//instant,callbacks
+					manualScroll.calculateNearest(true,false);
+				},200);
+			}
+			if(heights.length) {
+				manualScroll.init();
+
+				window.addEventListener('resize', util.handleResize);
+				if (document.addEventListener) {
+					window.addEventListener('orientationchange', util.handleOrientation, false);
+				}
+			}
 		}
-		if (initialised) {
+
+		_move(panel,instant) {
+			var z = names.length;
+			for(;z>=0;z--) {
+				if(typeof panel === 'string') {
+					if (names[z]===panel) {
+						index = z;
+						//index, instant, callbacks, toTop
+						animateScroll(z,instant,true,true);
+					}
+				} else {
+					if(z===panel) {
+						index = z;
+						//index, instant, callbacks, toTop
+						animateScroll(z,instant,true,true);
+					}
+				}
+			}
+		};
+
+		move(panel) {
+			if(panel===undefined) {
+				return false;
+			}
+			this._move(panel,false);
+		};
+
+		instantMove(panel) {
+			if(panel===undefined) {
+				return false;
+			}
+			this._move(panel,true);
+		};
+
+		next() {
+			if(index<names.length) {
+				index += 1;
+				//index, instant, callbacks, toTop
+				animateScroll(index,false,true,true);
+			}
+		};
+
+		previous() {
+			if(index>0) {
+				index -= 1;
+				//index, instant, callbacks, toTop
+				animateScroll(index,false,true,true);
+			}
+		};
+
+		instantNext() {
+			if(index<names.length) {
+				index += 1;
+				//index, instant, callbacks, toTop
+				animateScroll(index,true,true,true);
+			}
+		};
+
+		instantPrevious() {
+			if(index>0) {
+				index -= 1;
+				//index, instant, callbacks, toTop
+				animateScroll(index,true,true,true);
+			}
+		};
+
+		destroy() {
+			if(settings.setHeights) {
+				document.querySelectorAll(settings.section).forEach(function(val){
+					val.style.height = '';
+				});
+			}
+
+			window.removeEventListener('resize', util.handleResize);
+			// TODO: remove settings.scrollbars
+			if(settings.scrollbars) {
+				window.removeEventListener('mousedown', manualScroll.handleMousedown);
+				window.removeEventListener('mouseup', manualScroll.handleMouseup);
+				window.removeEventListener('scroll', manualScroll.handleScroll);
+			}
+
+			window.removeEventListener(wheelEvent, manualScroll.wheelHandler);
+			window.removeEventListener('keydown', manualScroll.keyHandler);
+
+			heights = [];
+			names = [];
+			elements = [];
+		};
+
+		update() {
+			util.handleUpdate();
+		};
+
+		current() {
+			return elements[index];
+		};
+
+		disable() {
+			disabled = true;
+			document.querySelector('body').style.overflow = '';
+		};
+
+		enable() {
+			disabled = false;
+			if(!settings.scrollbars) {
+				document.querySelector('body').style.overflow = 'hidden';
+			}
 			//instant,callbacks
 			manualScroll.calculateNearest(false,false);
-		}
-	};
-	scrollify.isDisabled = function() {
-		return disabled;
-	};
-	scrollify.setOptions = function(updatedOptions) {
-		if(!initialised) {
-			return false;
-		}
-		if(typeof updatedOptions === 'object') {
-			settings = Object.assign(settings, updatedOptions);
-			util.handleUpdate();
-		} else if(window.console) {
-			console.warn('Scrollify warning: setOptions expects an object.');
-		}
-	};
-	scrollify.getOptions = function(){
-		return settings;
-	};
+		};
 
-	return scrollify(options);
+		isDisabled() {
+			return disabled;
+		};
+
+		setOptions(updatedOptions) {
+			if(typeof updatedOptions === 'object') {
+				settings = Object.assign(settings, updatedOptions);
+				util.handleUpdate();
+			} else if(window.console) {
+				console.warn('Scrollify warning: setOptions expects an object.');
+			}
+		};
+
+		getOptions(){
+			return this.settings;
+		};
+	}
+
+	return new Scroller(options);
 }
