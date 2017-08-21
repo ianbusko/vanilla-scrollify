@@ -305,6 +305,7 @@ function Scrollify(scrollModule, options){
 		}
 	};
 
+	// TODO: move these into manualScroll
 	function atTop() {
 		return true;
 	}
@@ -312,43 +313,41 @@ function Scrollify(scrollModule, options){
 		return true;
 	}
 
+	util = {
+		refresh:function(withCallback,scroll) {
+			clearTimeout(timeoutId2);
+			timeoutId2 = setTimeout(function() {
+				//retain position
+				sizePanels(true);
+				//scroll, firstLoad
+				calculatePositions(scroll,false);
+				if(withCallback) {
+					settings.afterResize();
+				}
+			},400);
+		},
+		handleUpdate:function() {
+			//callbacks, scroll
+			//changed from false,true to false,false
+			util.refresh(false,false);
+		},
+		handleResize:function() {
+			if(!settings.enableMobile && window.innerWidth < settings.mobileWidth){
+				scrollify.disable();
+			} else if(disabled){
+				scrollify.enable();
+			}
+			//callbacks, scroll
+			util.refresh(true,false);
+		},
+		handleOrientation:function() {
+			//callbacks, scroll
+			util.refresh(true,true);
+		}
+	};
+
 	var scrollify = function(options) {
 		initialised = true;
-
-
-
-		util = {
-			refresh:function(withCallback,scroll) {
-				clearTimeout(timeoutId2);
-				timeoutId2 = setTimeout(function() {
-					//retain position
-					sizePanels(true);
-					//scroll, firstLoad
-					calculatePositions(scroll,false);
-					if(withCallback) {
-						settings.afterResize();
-					}
-				},400);
-			},
-			handleUpdate:function() {
-				//callbacks, scroll
-				//changed from false,true to false,false
-				util.refresh(false,false);
-			},
-			handleResize:function() {
-				if(!settings.enableMobile && window.innerWidth < settings.mobileWidth){
-					scrollify.disable();
-				} else if(disabled){
-					scrollify.enable();
-				}
-				//callbacks, scroll
-				util.refresh(true,false);
-			},
-			handleOrientation:function() {
-				//callbacks, scroll
-				util.refresh(true,true);
-			}
-		};
 
     // TODO: replace Object.assign with smarer property assignment
 		settings = Object.assign(settings, options);
