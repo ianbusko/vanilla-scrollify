@@ -347,9 +347,104 @@ function Scrollify(scrollModule, options){
 
 	class Scroller{
 		constructor(options){
-
 			this.settings = Object.assign(settings, options);
 		}
+
+		move(panel) {
+			if(panel===undefined) {
+				return false;
+			}
+			_move(panel,false);
+		};
+		instantMove(panel) {
+			if(panel===undefined) {
+				return false;
+			}
+			_move(panel,true);
+		};
+		next() {
+			if(index<names.length) {
+				index += 1;
+				//index, instant, callbacks, toTop
+				animateScroll(index,false,true,true);
+			}
+		};
+		previous() {
+			if(index>0) {
+				index -= 1;
+				//index, instant, callbacks, toTop
+				animateScroll(index,false,true,true);
+			}
+		};
+		instantNext() {
+			if(index<names.length) {
+				index += 1;
+				//index, instant, callbacks, toTop
+				animateScroll(index,true,true,true);
+			}
+		};
+		instantPrevious() {
+			if(index>0) {
+				index -= 1;
+				//index, instant, callbacks, toTop
+				animateScroll(index,true,true,true);
+			}
+		};
+		destroy() {
+			if(settings.setHeights) {
+				document.querySelectorAll(settings.section).forEach(function(val){
+					val.style.height = '';
+				});
+			}
+
+			window.removeEventListener('resize', util.handleResize);
+			// TODO: remove settings.scrollbars
+			if(settings.scrollbars) {
+				window.removeEventListener('mousedown', manualScroll.handleMousedown);
+				window.removeEventListener('mouseup', manualScroll.handleMouseup);
+				window.removeEventListener('scroll', manualScroll.handleScroll);
+			}
+
+			window.removeEventListener(wheelEvent, manualScroll.wheelHandler);
+			window.removeEventListener('keydown', manualScroll.keyHandler);
+
+			heights = [];
+			names = [];
+			elements = [];
+		};
+		update() {
+			util.handleUpdate();
+		};
+		current() {
+			return elements[index];
+		};
+		disable() {
+			disabled = true;
+			document.querySelector('body').style.overflow = '';
+		};
+		enable() {
+			disabled = false;
+			if(!settings.scrollbars) {
+				document.querySelector('body').style.overflow = 'hidden';
+			}
+			//instant,callbacks
+			manualScroll.calculateNearest(false,false);
+		};
+		isDisabled() {
+			return disabled;
+		};
+		setOptions(updatedOptions) {
+
+			if(typeof updatedOptions === 'object') {
+				settings = Object.assign(settings, updatedOptions);
+				util.handleUpdate();
+			} else if(window.console) {
+				console.warn('Scrollify warning: setOptions expects an object.');
+			}
+		};
+		getOptions(){
+			return this.settings;
+		};
 	}
 
 	var scrollify = function(options) {
