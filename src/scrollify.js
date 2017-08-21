@@ -345,10 +345,93 @@ function Scrollify(scrollModule, options){
 		}
 	};
 
+	function sizePanels(keepPosition) {
+		if(keepPosition) {
+			top = getScrollTop();
+		}
+
+		var selector = settings.section;
+
+		// TODO: break this out into extra methods
+		document.querySelectorAll(selector)
+			.forEach(function(val, i){
+				if(settings.setHeights){
+
+					val.style.height = '';
+					if((val.offsetHeight <= window.innerHeight) || val.style.overflow === 'hidden' ){
+						val.style.height = window.innerHeight;
+					}
+				}
+			});
+
+		if(keepPosition) {
+			// TODO: make this work (should set scroll top to top);
+			getScrollTop(top);
+		}
+	}
+	function calculatePositions(scroll,firstLoad) {
+		var selector = settings.section;
+
+		heights = [];
+		names = [];
+		elements = [];
+
+		document.querySelectorAll(selector)
+			.forEach(function(val, i){
+				if(i>0) {
+					heights[i] = parseInt(val.getBoundingClientRect().top + document.body.scrollTop) + settings.offset;
+				} else {
+					heights[i] = parseInt(val.getBoundingClientRect().top + document.body.scrollTop);
+				}
+
+				if(settings.sectionName && val.getAttribute(settings.sectionName)) {
+					names[i] = '#' + val.getAttribute(settings.sectionName).toString().replace(/ /g,'-');
+				} else {
+						names[i] = '#' + (i + 1);
+				}
+				elements[i] = val;
+
+				try {
+					if(document.getElementById(names[i]) && window.console){
+						console.warn('Scrollify warning: Section names can\'t match IDs - this will cause the browser to anchor.');
+					}
+				} catch (e) {}
+
+				if(window.location.hash===names[i]) {
+					index = i;
+					hasLocation = true;
+				}
+			});
+
+		if(true===scroll) {
+			//index, instant, callbacks, toTop
+			animateScroll(index,false,false,false);
+		}
+	}
+
 	class Scroller{
 		constructor(options){
 			this.settings = Object.assign(settings, options);
 		}
+
+		_move(panel,instant) {
+			var z = names.length;
+			for(;z>=0;z--) {
+				if(typeof panel === 'string') {
+					if (names[z]===panel) {
+						index = z;
+						//index, instant, callbacks, toTop
+						animateScroll(z,instant,true,true);
+					}
+				} else {
+					if(z===panel) {
+						index = z;
+						//index, instant, callbacks, toTop
+						animateScroll(z,instant,true,true);
+					}
+				}
+			}
+		};
 
 		move(panel) {
 			if(panel===undefined) {
@@ -356,12 +439,14 @@ function Scrollify(scrollModule, options){
 			}
 			_move(panel,false);
 		};
+
 		instantMove(panel) {
 			if(panel===undefined) {
 				return false;
 			}
 			_move(panel,true);
 		};
+
 		next() {
 			if(index<names.length) {
 				index += 1;
@@ -369,6 +454,7 @@ function Scrollify(scrollModule, options){
 				animateScroll(index,false,true,true);
 			}
 		};
+
 		previous() {
 			if(index>0) {
 				index -= 1;
@@ -376,6 +462,7 @@ function Scrollify(scrollModule, options){
 				animateScroll(index,false,true,true);
 			}
 		};
+
 		instantNext() {
 			if(index<names.length) {
 				index += 1;
@@ -383,6 +470,7 @@ function Scrollify(scrollModule, options){
 				animateScroll(index,true,true,true);
 			}
 		};
+
 		instantPrevious() {
 			if(index>0) {
 				index -= 1;
@@ -390,6 +478,7 @@ function Scrollify(scrollModule, options){
 				animateScroll(index,true,true,true);
 			}
 		};
+
 		destroy() {
 			if(settings.setHeights) {
 				document.querySelectorAll(settings.section).forEach(function(val){
@@ -412,16 +501,20 @@ function Scrollify(scrollModule, options){
 			names = [];
 			elements = [];
 		};
+
 		update() {
 			util.handleUpdate();
 		};
+
 		current() {
 			return elements[index];
 		};
+
 		disable() {
 			disabled = true;
 			document.querySelector('body').style.overflow = '';
 		};
+
 		enable() {
 			disabled = false;
 			if(!settings.scrollbars) {
@@ -430,11 +523,12 @@ function Scrollify(scrollModule, options){
 			//instant,callbacks
 			manualScroll.calculateNearest(false,false);
 		};
+
 		isDisabled() {
 			return disabled;
 		};
-		setOptions(updatedOptions) {
 
+		setOptions(updatedOptions) {
 			if(typeof updatedOptions === 'object') {
 				settings = Object.assign(settings, updatedOptions);
 				util.handleUpdate();
@@ -442,6 +536,7 @@ function Scrollify(scrollModule, options){
 				console.warn('Scrollify warning: setOptions expects an object.');
 			}
 		};
+
 		getOptions(){
 			return this.settings;
 		};
@@ -471,70 +566,6 @@ function Scrollify(scrollModule, options){
 			window.addEventListener('resize', util.handleResize);
 			if (document.addEventListener) {
 				window.addEventListener('orientationchange', util.handleOrientation, false);
-			}
-		}
-
-		function sizePanels(keepPosition) {
-			if(keepPosition) {
-				top = getScrollTop();
-			}
-
-			var selector = settings.section;
-
-			// TODO: break this out into extra methods
-			document.querySelectorAll(selector)
-				.forEach(function(val, i){
-					if(settings.setHeights){
-
-						val.style.height = '';
-						if((val.offsetHeight <= window.innerHeight) || val.style.overflow === 'hidden' ){
-							val.style.height = window.innerHeight;
-						}
-					}
-				});
-
-			if(keepPosition) {
-				// TODO: make this work (should set scroll top to top);
-				getScrollTop(top);
-			}
-		}
-		function calculatePositions(scroll,firstLoad) {
-			var selector = settings.section;
-
-			heights = [];
-			names = [];
-			elements = [];
-
-			document.querySelectorAll(selector)
-				.forEach(function(val, i){
-					if(i>0) {
-						heights[i] = parseInt(val.getBoundingClientRect().top + document.body.scrollTop) + settings.offset;
-					} else {
-						heights[i] = parseInt(val.getBoundingClientRect().top + document.body.scrollTop);
-					}
-
-					if(settings.sectionName && val.getAttribute(settings.sectionName)) {
-						names[i] = '#' + val.getAttribute(settings.sectionName).toString().replace(/ /g,'-');
-					} else {
-							names[i] = '#' + (i + 1);
-					}
-					elements[i] = val;
-
-					try {
-						if(document.getElementById(names[i]) && window.console){
-							console.warn('Scrollify warning: Section names can\'t match IDs - this will cause the browser to anchor.');
-						}
-					} catch (e) {}
-
-					if(window.location.hash===names[i]) {
-						index = i;
-						hasLocation = true;
-					}
-				});
-
-			if(true===scroll) {
-				//index, instant, callbacks, toTop
-				animateScroll(index,false,false,false);
 			}
 		}
 	}
