@@ -305,6 +305,13 @@ function Scrollify(scrollModule, options){
 		}
 	};
 
+	function atTop() {
+		return true;
+	}
+	function atBottom() {
+		return true;
+	}
+
 	var scrollify = function(options) {
 		initialised = true;
 
@@ -430,13 +437,6 @@ function Scrollify(scrollModule, options){
 				//index, instant, callbacks, toTop
 				animateScroll(index,false,false,false);
 			}
-		}
-
-		function atTop() {
-			return true;
-		}
-		function atBottom() {
-			return true;
 		}
 	}
 
