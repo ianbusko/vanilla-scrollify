@@ -141,172 +141,174 @@ function Scrollify(scrollModule, options){
 		}
 	}
 
+	manualScroll = {
+		handleMousedown:function() {
+			if(disabled===true) {
+				return true;
+			}
+			scrollable = false;
+			scrolled = false;
+		},
+		handleMouseup:function() {
+			if(disabled===true) {
+				return true;
+			}
+			scrollable = true;
+			if(scrolled) {
+				//instant,callbacks
+				manualScroll.calculateNearest(false,true);
+			}
+		},
+		handleScroll:function() {
+			if(disabled===true) {
+				return true;
+			}
+			if(timeoutId){
+				clearTimeout(timeoutId);
+			}
+
+			timeoutId = setTimeout(function(){
+				scrolled = true;
+				if(scrollable===false) {
+					return false;
+				}
+				scrollable = false;
+				//instant,callbacks
+				manualScroll.calculateNearest(false,true);
+			}, 200);
+		},
+		calculateNearest:function(instant,callbacks) {
+			top = getScrollTop();
+			var i =1,
+				max = heights.length,
+				closest = 0,
+				prev = Math.abs(heights[0] - top),
+				diff;
+			for(;i<max;i++) {
+				diff = Math.abs(heights[i] - top);
+
+				if(diff < prev) {
+					prev = diff;
+					closest = i;
+				}
+			}
+			if((atBottom() && closest>index) || atTop()) {
+				index = closest;
+				//index, instant, callbacks, toTop
+				animateScroll(closest,instant,callbacks,false);
+			}
+		},
+		wheelHandler:function(e) {
+			if(disabled===true) {
+				return true;
+			} else if(settings.standardScrollElements) {
+
+				if(e.target.matches(settings.standardScrollElements) || e.target.closest(settings.standardScrollElements).length) {
+					return true;
+				}
+			}
+			e.preventDefault();
+			var currentScrollTime = new Date().getTime();
+
+			e = e || window.event;
+			var value = e.wheelDelta || -e.deltaY || -e.detail;
+			var delta = Math.max(-1, Math.min(1, value));
+
+			if(scrollSamples.length > 149){
+				scrollSamples.shift();
+			}
+			scrollSamples.push(Math.abs(value));
+
+			if((currentScrollTime-scrollTime) > 200){
+				scrollSamples = [];
+			}
+			scrollTime = currentScrollTime;
+
+			if(locked) {
+				return false;
+			}
+			if(delta<0) {
+				if(index<heights.length-1) {
+					if(atBottom()) {
+						if(isAccelerating(scrollSamples)) {
+							e.preventDefault();
+							index++;
+							locked = true;
+							//index, instant, callbacks, toTop
+							animateScroll(index,false,true, false);
+						} else {
+							return false;
+						}
+					}
+				}
+			} else if(delta>0) {
+				if(index>0) {
+					if(atTop()) {
+						if(isAccelerating(scrollSamples)) {
+							e.preventDefault();
+							index--;
+							locked = true;
+							//index, instant, callbacks, toTop
+							animateScroll(index,false,true, false);
+						} else {
+							return false
+						}
+					}
+				}
+			}
+
+		},
+		keyHandler:function(e) {
+			if(disabled===true) {
+				return true;
+			}
+			if(locked===true) {
+				return false;
+			}
+			if(e.keyCode==38 || e.keyCode==33) {
+				if(index>0) {
+					if(atTop()) {
+						e.preventDefault();
+						index--;
+						//index, instant, callbacks, toTop
+						animateScroll(index,false,true,false);
+					}
+				}
+			} else if(e.keyCode==40 || e.keyCode==34) {
+				if(index<heights.length-1) {
+					if(atBottom()) {
+						e.preventDefault();
+						index++;
+						//index, instant, callbacks, toTop
+						animateScroll(index,false,true,false);
+					}
+				}
+			}
+		},
+		init:function() {
+			if(settings.scrollbars) {
+				window.addEventListener('mousedown', manualScroll.handleMousedown);
+				window.addEventListener('mouseup', manualScroll.handleMouseup);
+				window.addEventListener('scroll', manualScroll.handleScroll);
+			} else {
+				document.querySelector('body').style.overflow = 'hidden';
+			}
+
+			window.addEventListener(wheelEvent, manualScroll.wheelHandler);
+			window.addEventListener('keydown', manualScroll.keyHandler);
+
+			if(!settings.enableMobile && window.innerWidth < settings.mobileWidth){
+				scrollify.disable();
+			} else if(disabled){
+				scrollify.enable();
+			}
+		}
+	};
+
 	var scrollify = function(options) {
 		initialised = true;
 
-		manualScroll = {
-			handleMousedown:function() {
-				if(disabled===true) {
-					return true;
-				}
-				scrollable = false;
-				scrolled = false;
-			},
-			handleMouseup:function() {
-				if(disabled===true) {
-					return true;
-				}
-				scrollable = true;
-				if(scrolled) {
-					//instant,callbacks
-					manualScroll.calculateNearest(false,true);
-				}
-			},
-			handleScroll:function() {
-				if(disabled===true) {
-					return true;
-				}
-				if(timeoutId){
-					clearTimeout(timeoutId);
-				}
 
-				timeoutId = setTimeout(function(){
-					scrolled = true;
-					if(scrollable===false) {
-						return false;
-					}
-					scrollable = false;
-					//instant,callbacks
-					manualScroll.calculateNearest(false,true);
-				}, 200);
-			},
-			calculateNearest:function(instant,callbacks) {
-				top = getScrollTop();
-				var i =1,
-					max = heights.length,
-					closest = 0,
-					prev = Math.abs(heights[0] - top),
-					diff;
-				for(;i<max;i++) {
-					diff = Math.abs(heights[i] - top);
-
-					if(diff < prev) {
-						prev = diff;
-						closest = i;
-					}
-				}
-				if((atBottom() && closest>index) || atTop()) {
-					index = closest;
-					//index, instant, callbacks, toTop
-					animateScroll(closest,instant,callbacks,false);
-				}
-			},
-			wheelHandler:function(e) {
-				if(disabled===true) {
-					return true;
-				} else if(settings.standardScrollElements) {
-
-					if(e.target.matches(settings.standardScrollElements) || e.target.closest(settings.standardScrollElements).length) {
-						return true;
-					}
-				}
-				e.preventDefault();
-				var currentScrollTime = new Date().getTime();
-
-				e = e || window.event;
-				var value = e.wheelDelta || -e.deltaY || -e.detail;
-				var delta = Math.max(-1, Math.min(1, value));
-
-				if(scrollSamples.length > 149){
-					scrollSamples.shift();
-				}
-				scrollSamples.push(Math.abs(value));
-
-				if((currentScrollTime-scrollTime) > 200){
-					scrollSamples = [];
-				}
-				scrollTime = currentScrollTime;
-
-				if(locked) {
-					return false;
-				}
-				if(delta<0) {
-					if(index<heights.length-1) {
-						if(atBottom()) {
-							if(isAccelerating(scrollSamples)) {
-								e.preventDefault();
-								index++;
-								locked = true;
-								//index, instant, callbacks, toTop
-								animateScroll(index,false,true, false);
-							} else {
-								return false;
-							}
-						}
-					}
-				} else if(delta>0) {
-					if(index>0) {
-						if(atTop()) {
-							if(isAccelerating(scrollSamples)) {
-								e.preventDefault();
-								index--;
-								locked = true;
-								//index, instant, callbacks, toTop
-								animateScroll(index,false,true, false);
-							} else {
-								return false
-							}
-						}
-					}
-				}
-
-			},
-			keyHandler:function(e) {
-				if(disabled===true) {
-					return true;
-				}
-				if(locked===true) {
-					return false;
-				}
-				if(e.keyCode==38 || e.keyCode==33) {
-					if(index>0) {
-						if(atTop()) {
-							e.preventDefault();
-							index--;
-							//index, instant, callbacks, toTop
-							animateScroll(index,false,true,false);
-						}
-					}
-				} else if(e.keyCode==40 || e.keyCode==34) {
-					if(index<heights.length-1) {
-						if(atBottom()) {
-							e.preventDefault();
-							index++;
-							//index, instant, callbacks, toTop
-							animateScroll(index,false,true,false);
-						}
-					}
-				}
-			},
-			init:function() {
-				if(settings.scrollbars) {
-					window.addEventListener('mousedown', manualScroll.handleMousedown);
-					window.addEventListener('mouseup', manualScroll.handleMouseup);
-					window.addEventListener('scroll', manualScroll.handleScroll);
-				} else {
-					document.querySelector('body').style.overflow = 'hidden';
-				}
-
-				window.addEventListener(wheelEvent, manualScroll.wheelHandler);
-				window.addEventListener('keydown', manualScroll.keyHandler);
-
-				if(!settings.enableMobile && window.innerWidth < settings.mobileWidth){
-					scrollify.disable();
-				} else if(disabled){
-					scrollify.enable();
-				}
-			}
-		};
 
 		util = {
 			refresh:function(withCallback,scroll) {
