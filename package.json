@@ -1,6 +1,6 @@
 {
   "name": "vanilla-scrollify",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A vanilla JS port of \u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[Dbasic vanilla JS port of JQuery Scrollify",
   "main": "index.js",
   "scripts": {
