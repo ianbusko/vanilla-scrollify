@@ -412,6 +412,28 @@ function Scrollify(scrollModule, options){
 	class Scroller{
 		constructor(options){
 			this.settings = Object.assign(settings, options);
+
+			//retain position
+			sizePanels(false);
+			calculatePositions(false,true);
+
+			if(true===hasLocation) {
+				//index, instant, callbacks, toTop
+				animateScroll(index,false,true,true);
+			} else {
+				setTimeout(function() {
+					//instant,callbacks
+					manualScroll.calculateNearest(true,false);
+				},200);
+			}
+			if(heights.length) {
+				manualScroll.init();
+
+				window.addEventListener('resize', util.handleResize);
+				if (document.addEventListener) {
+					window.addEventListener('orientationchange', util.handleOrientation, false);
+				}
+			}
 		}
 
 		_move(panel,instant) {
@@ -686,5 +708,6 @@ function Scrollify(scrollModule, options){
 		return settings;
 	};
 
-	return scrollify(options);
+	// return scrollify(options);
+	return new Scroller(options);
 }
