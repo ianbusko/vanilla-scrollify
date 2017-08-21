@@ -459,14 +459,14 @@ function Scrollify(scrollModule, options){
 			if(panel===undefined) {
 				return false;
 			}
-			_move(panel,false);
+			this._move(panel,false);
 		};
 
 		instantMove(panel) {
 			if(panel===undefined) {
 				return false;
 			}
-			_move(panel,true);
+			this._move(panel,true);
 		};
 
 		next() {
