@@ -19,7 +19,6 @@ function Scrollify(scrollModule, options){
 		scrollSamples = [],
 		scrollTime = new Date().getTime(),
 		firstLoad = true,
-		initialised = false,
 		destination = 0,
 		wheelEvent = 'onwheel' in document ? 'wheel' : document.onmousewheel !== undefined ? 'mousewheel' : 'DOMMouseScroll',
 		settings = {
@@ -354,7 +353,6 @@ function Scrollify(scrollModule, options){
 	}
 
 	var scrollify = function(options) {
-		initialised = true;
 
     // TODO: replace Object.assign with smarer property assignment
 		settings = Object.assign(settings, options);
@@ -505,9 +503,6 @@ function Scrollify(scrollModule, options){
 		}
 	};
 	scrollify.destroy = function() {
-		if(!initialised) {
-			return false;
-		}
 		if(settings.setHeights) {
 			document.querySelectorAll(settings.section).forEach(function(val){
 				val.style.height = '';
@@ -530,9 +525,6 @@ function Scrollify(scrollModule, options){
 		elements = [];
 	};
 	scrollify.update = function() {
-		if(!initialised) {
-			return false;
-		}
 		util.handleUpdate();
 	};
 	scrollify.current = function() {
@@ -547,10 +539,8 @@ function Scrollify(scrollModule, options){
 		if(!settings.scrollbars) {
 			document.querySelector('body').style.overflow = 'hidden';
 		}
-		if (initialised) {
-			//instant,callbacks
-			manualScroll.calculateNearest(false,false);
-		}
+		//instant,callbacks
+		manualScroll.calculateNearest(false,false);
 	};
 	scrollify.isDisabled = function() {
 		return disabled;
