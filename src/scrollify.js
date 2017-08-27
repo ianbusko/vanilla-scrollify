@@ -296,11 +296,11 @@ function Scrollify(scrollModule, options){
 			window.addEventListener(wheelEvent, manualScroll.wheelHandler);
 			window.addEventListener('keydown', manualScroll.keyHandler);
 
-			if(!settings.enableMobile && window.innerWidth < settings.mobileWidth){
-				scrollify.disable();
-			} else if(disabled){
-				scrollify.enable();
-			}
+			// if(!settings.enableMobile && window.innerWidth < settings.mobileWidth){
+			// 	scrollify.disable();
+			// } else if(disabled){
+			// 	scrollify.enable();
+			// }
 		}
 	};
 
@@ -428,6 +428,11 @@ function Scrollify(scrollModule, options){
 			}
 			if(heights.length) {
 				manualScroll.init();
+				// if(!settings.enableMobile && window.innerWidth < settings.mobileWidth){
+				// 	scrollify.disable();
+				// } else if(disabled){
+				// 	scrollify.enable();
+				// }
 
 				window.addEventListener('resize', util.handleResize);
 				if (document.addEventListener) {
