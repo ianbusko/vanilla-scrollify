@@ -36,9 +36,6 @@ function Scrollify(scrollModule, options){
 			afterRender:function() {}
 		};
 
-		settings.enableMobile = false;
-		settings.mobileWidth = 1200;
-
 	// replace $window.scrollTop()
 	function getScrollTop(){
 		return (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
@@ -295,12 +292,6 @@ function Scrollify(scrollModule, options){
 
 			window.addEventListener(wheelEvent, manualScroll.wheelHandler);
 			window.addEventListener('keydown', manualScroll.keyHandler);
-
-			// if(!settings.enableMobile && window.innerWidth < settings.mobileWidth){
-			// 	scrollify.disable();
-			// } else if(disabled){
-			// 	scrollify.enable();
-			// }
 		}
 	};
 
@@ -331,11 +322,6 @@ function Scrollify(scrollModule, options){
 			util.refresh(false,false);
 		},
 		handleResize:function() {
-			if(!settings.enableMobile && window.innerWidth < settings.mobileWidth){
-				scrollify.disable();
-			} else if(disabled){
-				scrollify.enable();
-			}
 			//callbacks, scroll
 			util.refresh(true,false);
 		},
@@ -428,12 +414,6 @@ function Scrollify(scrollModule, options){
 			}
 			if(heights.length) {
 				manualScroll.init();
-				// if(!settings.enableMobile && window.innerWidth < settings.mobileWidth){
-				// 	scrollify.disable();
-				// } else if(disabled){
-				// 	scrollify.enable();
-				// }
-
 				window.addEventListener('resize', util.handleResize);
 				if (document.addEventListener) {
 					window.addEventListener('orientationchange', util.handleOrientation, false);
