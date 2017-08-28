@@ -88,7 +88,7 @@ function Scrollify(scrollModule, options){
 			updateHistory(names[index]);
 		}
 		if(firstLoad) {
-			settings.afterRender();
+			settings.afterRender(index);
 			firstLoad = false;
 		}
 
