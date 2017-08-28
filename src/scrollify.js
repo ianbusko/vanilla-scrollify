@@ -81,7 +81,6 @@ function Scrollify(scrollModule, options){
 		if(callbacks) {
 			settings.before(index,elements);
 		}
-		destination = heights[index];
 
 		// TODO: move this into its own function
 		if(settings.updateHash && settings.sectionName && !(firstLoad===true && index===0)) {
@@ -95,7 +94,7 @@ function Scrollify(scrollModule, options){
 		currentIndex = index;
 
 		if(instant) {
-      scrollModule.scrollTo(destination, instant).then(() => {
+      scrollModule.scrollTo(elements[index], instant).then(() => {
 				if(callbacks) {
 					settings.after(index,elements);
 				}
