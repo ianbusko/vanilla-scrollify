@@ -364,11 +364,10 @@ function Scrollify(scrollModule, options){
 		document.querySelectorAll(selector)
 			.forEach(function(val, i){
 				if(i>0) {
-					heights[i] = parseInt(val.getBoundingClientRect().top + document.body.scrollTop) + settings.offset;
+					heights[i] = parseInt(val.getBoundingClientRect().top + document.documentElement.scrollTop) + settings.offset;
 				} else {
-					heights[i] = parseInt(val.getBoundingClientRect().top + document.body.scrollTop);
+					heights[i] = parseInt(val.getBoundingClientRect().top + document.documentElement.scrollTop);
 				}
-
 				if(settings.sectionName && val.getAttribute(settings.sectionName)) {
 					names[i] = '#' + val.getAttribute(settings.sectionName).toString().replace(/ /g,'-');
 				} else {
