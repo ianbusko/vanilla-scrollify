@@ -363,11 +363,8 @@ function Scrollify(scrollModule, options){
 
 		document.querySelectorAll(selector)
 			.forEach(function(val, i){
-				if(i>0) {
-					heights[i] = parseInt(val.getBoundingClientRect().top + document.documentElement.scrollTop) + settings.offset;
-				} else {
-					heights[i] = parseInt(val.getBoundingClientRect().top + document.documentElement.scrollTop);
-				}
+				heights[i] = parseInt(val.getBoundingClientRect().top + document.documentElement.scrollTop) + (i > 0) ? 0 : settings.offset;
+
 				if(settings.sectionName && val.getAttribute(settings.sectionName)) {
 					names[i] = '#' + val.getAttribute(settings.sectionName).toString().replace(/ /g,'-');
 				} else {
