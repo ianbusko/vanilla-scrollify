@@ -1,3 +1,75 @@
+'use strict';
+
+class Scrolly{
+	constructor (options, scrollModule){
+		this.settings = object.Assign({
+			section: '.section',
+			sectionName: 'section-name',
+			offset : 0,
+			scrollbars: false,
+			target:'html,body',
+			standardScrollElements: false,
+			setHeights: true,
+			updateHash: true,
+			before:function() {},
+			after:function() {},
+			afterResize:function() {},
+			afterRender:function() {}
+		}, options);
+
+		this.scrollModule = scrollModule;
+	}
+
+	function animateScroll(index,instant,callbacks,toTop) {
+		if(currentIndex===index) {
+			callbacks = false;
+		}
+		if(disabled===true) {
+			return true;
+		}
+
+		if(!names[index]){
+			return;
+		}
+
+		scrollable = false;
+		if(callbacks) {
+			settings.before(index,elements);
+		}
+
+		// TODO: move this into its own function
+		if(settings.updateHash && settings.sectionName && !(firstLoad===true && index===0)) {
+			updateHistory(names[index]);
+		}
+		if(firstLoad) {
+			settings.afterRender(index);
+			firstLoad = false;
+		}
+
+		currentIndex = index;
+
+		if(instant) {
+      this.scrollModule.scrollTo(elements[index], instant).then(() => {
+				if(callbacks) {
+					settings.after(index,elements);
+				}
+			});
+		} else {
+			locked = true;
+			warnHashValue();
+
+      this.scrollModule.scrollTo(elements[index]).then(() => {
+				locked = false;
+				firstLoad = false;
+				if(callbacks) {
+					settings.after(index,elements);
+				}
+			});
+		}
+	}
+
+}
+
 function Scrollify(scrollModule, options){
 	'use strict';
 	var heights = [],
@@ -363,8 +435,11 @@ function Scrollify(scrollModule, options){
 
 		document.querySelectorAll(selector)
 			.forEach(function(val, i){
-				heights[i] = parseInt(val.getBoundingClientRect().top + document.documentElement.scrollTop) + (i > 0) ? 0 : settings.offset;
-
+				if(i>0) {
+					heights[i] = parseInt(val.getBoundingClientRect().top + document.documentElement.scrollTop) + settings.offset;
+				} else {
+					heights[i] = parseInt(val.getBoundingClientRect().top + document.documentElement.scrollTop);
+				}
 				if(settings.sectionName && val.getAttribute(settings.sectionName)) {
 					names[i] = '#' + val.getAttribute(settings.sectionName).toString().replace(/ /g,'-');
 				} else {
