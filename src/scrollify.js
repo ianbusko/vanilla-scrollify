@@ -549,3 +549,5 @@ function Scrollify(scrollModule, options){
 
 	return new Scroller(options);
 }
+
+export default Scrollify;
