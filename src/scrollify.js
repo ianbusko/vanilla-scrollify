@@ -1,3 +1,6 @@
+import easing from './easing.js';
+import ScrollModule from './smooth-scroll-module.js';
+
 function Scrollify(scrollModule, options){
 	'use strict';
 	var heights = [],
@@ -25,6 +28,8 @@ function Scrollify(scrollModule, options){
 			section: '.section',
 			sectionName: 'section-name',
 			offset : 0,
+			scrollEasing: easing.easeInOutQuad,
+			scrollDuration: 1000,
 			scrollbars: false,
 			target:'html,body',
 			standardScrollElements: false,
@@ -35,6 +40,13 @@ function Scrollify(scrollModule, options){
 			afterResize:function() {},
 			afterRender:function() {}
 		};
+
+	settings = Object.assign(settings, options);
+	scrollModule = new ScrollModule({
+		easing: settings.scrollEasing,
+		offset: settings.offset,
+		duration: settings.scrollDuration
+	});
 
 	// replace $window.scrollTop()
 	function getScrollTop(){
