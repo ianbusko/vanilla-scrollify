@@ -20,8 +20,5 @@
   "bugs": {
     "url": "https://github.com/ianbusko/vanilla-scrollify/issues"
   },
-  "homepage": "https://github.com/ianbusko/vanilla-scrollify#readme",
-  "devDependencies": {
-    "smooth-scroll-module": "^1.0.4"
-  }
+  "homepage": "https://github.com/ianbusko/vanilla-scrollify#readme"
 }

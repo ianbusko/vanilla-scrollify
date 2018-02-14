@@ -39,25 +39,8 @@
    <div class="section"></div>
    <div class="section"></div>
 
-   <script src="../dist/scroll-module.js"></script>
-   <script src="../src/scrollify.js"></script>
-   <script>
-
-      window.scrollTo(0,0);
-
-      // TODO: pass easing as a parameter correctly
-      var scrollModule = new ScrollModule({
-        duration: 1100,
-        offset: 0
-      });
-
-      var scroller = new Scrollify(scrollModule);
-      //
-      // var mod = new ScrollModule({
-      //   section:
-      // });
-      // mod.scrollTo('.section:nth-of-type(6)');
-
-   </script>
+   <script type="module" src="src/smooth-scroll-module.js"></script>
+   <script type="module" src="src/scrollify.js"></script>
+   <script type="module" src="src/script.js"></script>
  </body>
 </html>
