@@ -1,7 +1,7 @@
 import easing from './easing.js';
-import ScrollModule from './smooth-scroll-module.js';
+import ScrollModule from './scroll-module.js';
 
-function Scrollify(scrollModule, options){
+export default function Scrollify(options){
 	'use strict';
 	var heights = [],
 		names = [],
@@ -42,7 +42,7 @@ function Scrollify(scrollModule, options){
 		};
 
 	settings = Object.assign(settings, options);
-	scrollModule = new ScrollModule({
+	const scrollModule = new ScrollModule({
 		easing: settings.scrollEasing,
 		offset: settings.offset,
 		duration: settings.scrollDuration
@@ -561,5 +561,3 @@ function Scrollify(scrollModule, options){
 
 	return new Scroller(options);
 }
-
-export default Scrollify;
