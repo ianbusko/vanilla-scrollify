@@ -1,12 +1,13 @@
 {
   "name": "vanilla-scrollify",
-  "version": "1.7.0",
+  "version": "2.0.2",
   "description": "A vanilla JS port of JQuery Scrollify.",
   "main": "index.js",
   "scripts": {
+    "start":  "webpack-dev-server",
     "babel": "babel --presets es2015 js/main.js -o build/main.bundle.js",
-    "start": "http-server",
-    "webpack": "webpack"
+    "webpack": "webpack",
+    "prepublish": "webpack --config webpack-production.config.js -p"
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,7 @@
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.1",
-    "webpack": "^3.11.0"
+    "webpack": "^3.11.0",
+    "webpack-dev-server": "^2.11.1"
   }
 }

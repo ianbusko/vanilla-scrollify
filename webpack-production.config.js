@@ -2,13 +2,12 @@ var path = require('path');
 var webpack = require('webpack');
 
 module.exports = {
-   entry: ['./src/scrollify.js', './src/script.js'],
+   entry: ['./src/scrollify.js'],
    output: {
        path: path.resolve(__dirname, 'lib'),
        filename: 'scrollify.js'
    },
-   watch: true,
-   module: {  
+   module: {
        loaders: [
            {
                test: /\.js$/,
