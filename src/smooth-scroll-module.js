@@ -1,7 +1,9 @@
+import easing from './easing.js';
+
 export default class{
   constructor(options){
     this.settings = Object.assign({
-      easing: this._easing,
+      easing: easing.easeInOutQuad,
       offset: 0,
       duration: 400,
     }, options);
@@ -54,13 +56,5 @@ export default class{
   _end(resolve){
     window.scrollTo(0, this.start + this.distance);
     resolve();
-  }
-
-  // Easing function. This one is borrowed from JQuery UI.
-  _easing(t, b, c, d) {
-    t /= d / 2;
-    if (t < 1) return c / 2 * t * t + b;
-    t--;
-    return -c / 2 * (t * (t - 2) - 1) + b;
   }
 }
