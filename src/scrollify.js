@@ -98,9 +98,11 @@ export default function Scrollify(options){
 		if(settings.updateHash && settings.sectionName && !(firstLoad===true && index===0)) {
 			updateHistory(names[index]);
 		}
+
 		if(firstLoad) {
 			settings.afterRender(index);
 			firstLoad = false;
+			instant = true;
 		}
 
 		currentIndex = index;
