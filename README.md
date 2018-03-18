@@ -5,16 +5,8 @@ This project is a work in progress. Currently only basic behavior is supported.
 
 ## Basic Setup
 
-Vanilla Scrollify depends on [`smooth-scroll-module`](https://github.com/ianbusko/smooth-scroll-module).
-The first parameter for the Scrollify class is an instance of a ScrollModule.
-Use the module like this:
+### New in V2:
 
-```javascript
-var scrollModule = new ScrollModule();
-var scrollify = new Scrollify(scrollModule, {
-  section: '.section'
-});
-```
 
 ## Configuration
 

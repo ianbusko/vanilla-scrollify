@@ -1,4 +1,7 @@
-function Scrollify(scrollModule, options){
+import easing from './easing.js';
+import ScrollModule from './scroll-module.js';
+
+export default function Scrollify(options){
 	'use strict';
 	var heights = [],
 		names = [],
@@ -25,6 +28,8 @@ function Scrollify(scrollModule, options){
 			section: '.section',
 			sectionName: 'section-name',
 			offset : 0,
+			scrollEasing: easing.easeInOutQuad,
+			scrollDuration: 1000,
 			scrollbars: false,
 			target:'html,body',
 			standardScrollElements: false,
@@ -35,6 +40,13 @@ function Scrollify(scrollModule, options){
 			afterResize:function() {},
 			afterRender:function() {}
 		};
+
+	settings = Object.assign(settings, options);
+	const scrollModule = new ScrollModule({
+		easing: settings.scrollEasing,
+		offset: settings.offset,
+		duration: settings.scrollDuration
+	});
 
 	// replace $window.scrollTop()
 	function getScrollTop(){
@@ -86,9 +98,11 @@ function Scrollify(scrollModule, options){
 		if(settings.updateHash && settings.sectionName && !(firstLoad===true && index===0)) {
 			updateHistory(names[index]);
 		}
+
 		if(firstLoad) {
 			settings.afterRender(index);
 			firstLoad = false;
+			instant = true;
 		}
 
 		currentIndex = index;
